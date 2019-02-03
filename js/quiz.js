@@ -1,6 +1,8 @@
 let correctAnswer;
-let correctNumber = 0;
-let incorrectNumber = 0;
+
+
+let correctNumber = (localStorage.getItem('quiz_game_correct') ? localStorage.getItem('quiz_game_correct') : 0);
+let incorrectNumber = (localStorage.getItem('quiz_game_incorrect') ? localStorage.getItem('quiz_game_incorrect') : 0);
 
 document.addEventListener('DOMContentLoaded', ()=>{
     loadQuestion();
@@ -11,12 +13,13 @@ document.addEventListener('DOMContentLoaded', ()=>{
 
 function eventListener(){
     document.querySelector('#check-answer').addEventListener('click', validateAnswer);
+    document.querySelector('#clear-storage').addEventListener('click', clearStorage);
 }
 
 // Loads questions from an API
 
 loadQuestion = () =>{
-    const url = 'https://opentdb.com/api.php?amount=1';
+    const url = 'https://opentdb.com/api.php?amount=1&category=18&difficulty=easy&type=multiple';
     fetch(url)
         .then(data => data.json())
         .then(result => displayQuestion(result.results));
@@ -109,7 +112,8 @@ function checkAnswer(){
     } else {
         incorrectNumber++;
     }
-
+    // save into Local Storage
+    saveIntoStorage();
     // clear previous question
     const app = document.querySelector('#app');
     while(app.firstChild){
@@ -118,4 +122,18 @@ function checkAnswer(){
 
     
     loadQuestion();
+}
+
+function saveIntoStorage(){
+    localStorage.setItem('quiz_game_correct', correctNumber);
+    localStorage.setItem('quiz_game_incorrect', incorrectNumber);
+}
+
+function clearStorage(){
+    localStorage.setItem('quiz_game_correct', 0);
+    localStorage.setItem('quiz_game_incorrect', 0);
+
+    setTimeout(()=>{
+        window.location.reload();
+    }, 500);
 }
